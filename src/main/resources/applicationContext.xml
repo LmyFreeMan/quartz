@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="scheduleJob" class="com.entity.ScheduleJob">
+        <property name="jobId" value="joo1"></property>
+        <property name="jobName" value="任务1"></property>
+        <property name="jobGroup" value="任务组1"></property>
+        <property name="jobStatus" value="1"></property>
+        <property name="cronExpression" value="5.10,30,50 * * * * ? *"></property>
+    </bean>
+    <bean id="jobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="scedulejob">
+                    <ref bean="scheduleJob"></ref>
+                </entry>
+            </map>
+        </property>
+        <property name="jobClass" value="com.job.PlanJob"></property>
+    </bean>
+    <!--触发器-->
+    <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail"></property>
+        <property name="cronExpression" value="#{scheduleJob.cronExpression}"></property>
+    </bean>
+    <!--调度器-->
+    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="cronTrigger"/>
+            </list>
+        </property>
+    </bean>
+</beans>
